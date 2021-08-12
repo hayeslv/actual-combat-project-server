@@ -17,7 +17,7 @@ const createRule = {
 
 class UserController extends BaseController {
   async login() {
-
+    console.log(12);
   }
   async register() {
     const { ctx } = this;
@@ -50,7 +50,7 @@ class UserController extends BaseController {
     // 校验用户名是否存在
   }
   async info() {
-
+    console.log(12);
   }
 }
 module.exports = UserController;
