@@ -6,8 +6,9 @@
 module.exports = app => {
   const { router, controller } = app;
   router.get('/', controller.home.index);
-  // 验证码
-  router.get('/captcha', controller.util.captcha);
+
+  router.get('/captcha', controller.util.captcha); // 图片验证码
+  router.get('/sendcode', controller.util.sendcode); // 邮件验证码
 
   router.group({ name: 'user', prefix: '/user' }, router => {
     const { info, register, login, verify } = controller.user;
