@@ -5,6 +5,7 @@
  */
 module.exports = app => {
   const { router, controller } = app;
+  const jwt = app.middleware.jwt({ app });
   router.get('/', controller.home.index);
 
   router.get('/captcha', controller.util.captcha); // 图片验证码
@@ -15,7 +16,9 @@ module.exports = app => {
 
     router.post('/register', register);
     router.post('/login', login);
-    router.get('/info', info);
+
+    router.get('/info', jwt, info);
+
     router.get('/verify', verify);
   });
 };

@@ -19,11 +19,14 @@ const createRule = {
 class UserController extends BaseController {
   async login() {
     const { ctx, app } = this;
-    const { email, captcha, password } = ctx.request.body;
+    const { email, captcha, password, emailcode } = ctx.request.body;
 
     // 校验验证码
     if (captcha.toUpperCase() !== ctx.session.captcha.toUpperCase()) {
       return this.error('验证码错误');
+    }
+    if (emailcode !== ctx.session.emailcode) {
+      return this.error('邮箱验证码错误');
     }
     const user = await ctx.model.User.findOne({
       email,
@@ -37,7 +40,7 @@ class UserController extends BaseController {
       _id: user._id,
       email,
     }, app.config.jwt.secret, {
-      expiresIn: '1h',
+      expiresIn: '1h', // token过期时间
     });
     this.success({ token, email, nickname: user.nickname });
   }
@@ -76,7 +79,11 @@ class UserController extends BaseController {
     // 校验用户名是否存在
   }
   async info() {
-    console.log(12);
+    const { ctx } = this;
+    // 有的接口需要从token中读数据，有的不需要
+    const { email } = ctx.state;
+    const user = await this.checkEmail(email);
+    this.success(user);
   }
 }
 module.exports = UserController;
