@@ -26,5 +26,17 @@ module.exports = appInfo => {
   return {
     ...config,
     ...userConfig,
+    // 这里关掉csrf：注，正式环境需要启动
+    security: {
+      csrf: {
+        enable: false,
+      },
+    },
+    mongoose: {
+      client: {
+        url: 'mongodb://192.168.2.135:27017/kkbhub',
+        options: {},
+      },
+    },
   };
 };
