@@ -5,6 +5,7 @@
  */
 'use strict';
 const md5 = require('md5');
+const jwt = require('jsonwebtoken');
 const BaseController = require('./base');
 
 const HashSalt = ':DylanLV@sAult~';
@@ -17,7 +18,28 @@ const createRule = {
 
 class UserController extends BaseController {
   async login() {
-    console.log(12);
+    const { ctx, app } = this;
+    const { email, captcha, password } = ctx.request.body;
+
+    // 校验验证码
+    if (captcha.toUpperCase() !== ctx.session.captcha.toUpperCase()) {
+      return this.error('验证码错误');
+    }
+    const user = await ctx.model.User.findOne({
+      email,
+      password: md5(password + HashSalt),
+    });
+    if (!user) {
+      return this.error('用户名或密码错误');
+    }
+    // 用户的信息加密成token返回
+    const token = jwt.sign({
+      _id: user._id,
+      email,
+    }, app.config.jwt.secret, {
+      expiresIn: '1h',
+    });
+    this.success({ token, email, nickname: user.nickname });
   }
   async register() {
     const { ctx } = this;
@@ -31,9 +53,13 @@ class UserController extends BaseController {
     const { email, password, captcha, nickname } = ctx.request.body;
 
     // 校验验证码
-    if (captcha.toUpperCase() !== ctx.session.captcha.toUpperCase()) return this.error('验证码错误');
+    if (captcha.toUpperCase() !== ctx.session.captcha.toUpperCase()) {
+      return this.error('验证码错误');
+    }
     // 邮箱是否重复
-    if (await this.checkEmail(email)) return this.error('邮箱重复啦');
+    if (await this.checkEmail(email)) {
+      return this.error('邮箱重复啦');
+    }
 
     const res = await ctx.model.User.create({
       email,
