@@ -1,3 +1,8 @@
+/*
+ * @Author: Lvhz
+ * @Date: 2021-08-11 16:27:46
+ * @Description: 路由
+ */
 'use strict';
 
 /**
@@ -10,6 +15,7 @@ module.exports = app => {
 
   router.get('/captcha', controller.util.captcha); // 图片验证码
   router.get('/sendcode', controller.util.sendcode); // 邮件验证码
+  router.post('/uploadfile', controller.util.uploadfile); // 文件上传
 
   router.group({ name: 'user', prefix: '/user' }, router => {
     const { info, register, login, verify } = controller.user;

@@ -1,8 +1,15 @@
+/*
+ * @Author: Lvhz
+ * @Date: 2021-08-12 10:10:02
+ * @Description: Description
+ */
 'use strict';
 const svgCaptcha = require('svg-captcha');
+const fse = require('fs-extra');
 const BaseController = require('./base');
 
 class UtilController extends BaseController {
+  // 图片验证码
   async captcha() {
     const { ctx } = this;
     const captcha = svgCaptcha.create({
@@ -18,6 +25,7 @@ class UtilController extends BaseController {
     ctx.response.type = 'image/svg+xml';
     ctx.body = captcha.data;
   }
+  // 发邮件
   async sendcode() {
     const { ctx } = this;
     const email = ctx.query.email;
@@ -34,6 +42,19 @@ class UtilController extends BaseController {
     } else {
       this.error('发送失败');
     }
+  }
+  // 文件上传（这里只负责上传文件，不负责入库的操作）
+  async uploadfile() {
+    const { ctx } = this;
+    const file = ctx.request.files[0];
+    const { name } = ctx.request.body;
+    console.log(file, name);
+
+    await fse.move(file.filepath, this.config.UPLOAD_DIR + '/' + file.filename);
+
+    this.success({
+      url: `/public/${file.filename}`,
+    });
   }
 }
 module.exports = UtilController;
