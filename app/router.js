@@ -16,6 +16,8 @@ module.exports = app => {
   router.get('/captcha', controller.util.captcha); // 图片验证码
   router.get('/sendcode', controller.util.sendcode); // 邮件验证码
   router.post('/uploadfile', controller.util.uploadfile); // 文件上传
+  router.post('/uploadfileChunk', controller.util.uploadfileChunk); // 文件上传chunk
+  router.post('/mergefile', controller.util.mergefile); // 文件合并
 
   router.group({ name: 'user', prefix: '/user' }, router => {
     const { info, register, login, verify } = controller.user;
