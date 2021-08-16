@@ -86,5 +86,30 @@ class UtilController extends BaseController {
       url: `/public/${hash}.${ext}`,
     });
   }
+  async checkfile() {
+    const { ctx } = this;
+    const { ext, hash } = ctx.request.body;
+    // 如果public下面有，则证明该文件存在
+    // 如果没有，那我们看下有没有它的文件夹，如果有文件夹，则里面可能有它的碎片，如果没有则全量上传
+    const filePath = path.resolve(this.config.UPLOAD_DIR, `${hash}.${ext}`);
+    let uploaded = false;
+    let uploadedList = [];
+    if (fse.existsSync(filePath)) {
+      // 文件存在
+      uploaded = true;
+    } else {
+      // 尝试读取目录下面有没有文件切片
+      uploadedList = await this.getUploadList(path.resolve(this.config.UPLOAD_DIR, hash));
+    }
+    this.success({
+      uploaded,
+      uploadedList,
+    });
+  }
+  async getUploadList(dirPath) {
+    return fse.existsSync(dirPath)
+      ? (await fse.readdir(dirPath)).filter(name => name[0] !== '.') // 读取文件夹下的文件并过滤隐藏文件（.开头的文件）
+      : [];
+  }
 }
 module.exports = UtilController;
