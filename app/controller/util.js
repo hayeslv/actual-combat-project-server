@@ -59,7 +59,12 @@ class UtilController extends BaseController {
   }
   // 文件切片上传
   async uploadfileChunk() {
-    // /public/hash/(hash+index)
+    // 模拟一半概率报错
+    // if (Math.random() > 0.5) {
+    //   this.ctx.status = 500;
+    //   return;
+    // }
+    // /public/hash/(hash+index)11
     const { ctx } = this;
     const file = ctx.request.files[0];
     const { hash, name } = ctx.request.body;
